@@ -1,0 +1,64 @@
+wget http://download.redis.io/releases/redis-3.2.6.tar.gz
+解压缩
+
+tar xzf redis-3.2.6.tar.gz
+进入解压后的文件目录
+
+cd redis-3.2.6
+redis安装相对简单 直接编译即可
+
+make
+创建存储redis文件目录
+
+mkdir -p /usr/local/redis
+复制redis-server redis-cli到新建立的文件夹
+
+cp ./redis-server /usr/local/redis/
+cp ./redis-cli /usr/local/redis/
+复制redis的配置文件
+
+cd ..
+cp redis.conf /usr/local/redis/
+编辑配置文件
+
+cd /usr/local/redis/
+vim redis.conf
+改为yes 后台运行 
+
+添加开机启动服务
+
+vim /etc/systemd/system/redis-server.service
+粘贴一下内容
+
+复制代码
+[Unit]
+Description=The redis-server Process Manager
+After=syslog.target network.target
+
+[Service]
+Type=simple
+PIDFile=/var/run/redis_6379.pid
+ExecStart=/usr/local/redis/redis-server /usr/local/redis/redis.conf         
+ExecReload=/bin/kill -USR2 $MAINPID
+ExecStop=/bin/kill -SIGINT $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+复制代码
+ 设置开机启动
+
+systemctl daemon-reload 
+systemctl start redis-server.service 
+systemctl enable redis-server.service
+检查是否安装成功
+
+
+
+创建redis命令软连接
+
+ln -s /usr/local/redis/redis-cli /usr/bin/redis
+测试redis
+
+
+
+ 
